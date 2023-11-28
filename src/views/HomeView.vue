@@ -1,18 +1,44 @@
+<!-- SpeechToText.vue -->
+
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <button @click="startSpeechRecognition">Start Speech Recognition</button>
+    <div v-if="transcription">Transcription: {{ transcription }}</div>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
-
 export default {
-  name: 'HomeView',
-  components: {
-    HelloWorld
-  }
-}
+  data() {
+    return {
+      transcription: '',
+    };
+  },
+  methods: {
+    startSpeechRecognition() {
+      const recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        const result = event.results[event.results.length - 1][0].transcript;
+        this.transcription = result;
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+      };
+
+      recognition.onend = () => {
+        console.log('Speech recognition ended.');
+      };
+
+      recognition.start();
+    },
+  },
+};
 </script>
+
+<style scoped>
+/* Add your component styles here */
+</style>
